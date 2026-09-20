@@ -15,7 +15,7 @@
 
 ## 技术栈
 
-Astro + TypeScript + Tailwind CSS v4 + Pagefind + Cloudflare Pages。
+Astro + TypeScript + Tailwind CSS v4 + Pagefind + Cloudflare Workers 静态资源（Workers Builds）。
 零数据库、零服务端、零运行时依赖：`git push` 即发布。
 
 ## 内容形态

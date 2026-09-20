@@ -278,7 +278,7 @@ books/*.md ──► 解析与校验（Schema）──► Astro 内容集合
 - 框架：Astro + TypeScript（默认零 JS，仅在搜索与"再看一句"处按需加载）。
 - 样式：Tailwind CSS v4 + 设计令牌（Kami 色板与排版规则）。
 - 搜索：Pagefind（构建期索引）。
-- 部署：Cloudflare Pages，主分支自动发布，PR 生成预览。
+- 部署：Cloudflare Worker 静态资源（Workers Builds），主分支自动发布；内容仓根目录的 `wrangler.jsonc` 声明产物目录与 404 处理。
 
 ### 9.1 双仓与构建路径
 

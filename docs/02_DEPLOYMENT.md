@@ -50,18 +50,41 @@ npm run dev
 
 搜索页依赖构建产物：`npm run dev` 下 `/search` 不加载索引，需要先 `npm run build && npm run preview`。
 
-## 3. Cloudflare Pages 配置
+## 3. Cloudflare 配置（Workers Builds，当前采用）
 
-在 Cloudflare Dashboard 创建 Pages 项目，连接到**私有内容仓** `zhaizhi-content`：
+项目 `zhaizhi-content` 连接**私有内容仓** `zhaizhi-content`，构建与部署参数如下：
 
 | 配置项 | 值 |
 | --- | --- |
-| Framework preset | None |
-| Build command | `git clone --depth 1 https://github.com/acshameless/zhaizhi-codex.git .zhaizhi && bash .zhaizhi/scripts/build-with-content.sh "$PWD" .zhaizhi` |
-| Build output directory | `.zhaizhi/dist` |
+| Git 存储库 | `acshameless/zhaizhi-content` |
+| 生产分支 | `main` |
+| 根目录 | `/` |
+| 构建命令 | `git clone --depth 1 https://github.com/acshameless/zhaizhi-codex.git .zhaizhi && bash .zhaizhi/scripts/build-with-content.sh "$PWD" .zhaizhi` |
+| 部署命令 | `npx wrangler deploy`（默认） |
+| 版本命令 | `npx wrangler versions upload`（默认） |
 | 环境变量 | `NODE_VERSION=22` |
 
-工作方式：构建容器检出的内容仓就是内容源；公开代码仓通过 HTTPS 克隆，因此不需要任何跨仓密钥。之后每次向内容仓 push 都会自动重建并发布。
+静态资源由内容仓根目录的 `wrangler.jsonc` 声明：
+
+```jsonc
+{
+  "name": "zhaizhi-content",
+  "compatibility_date": "2026-09-20",
+  "assets": {
+    "directory": ".zhaizhi/dist",
+    "not_found_handling": "404-page"
+  }
+}
+```
+
+要点：
+
+1. Workers Builds 没有"构建输出目录"字段，产物路径写在 `wrangler.jsonc` 的 `assets.directory` 里。
+2. 公开代码仓通过 HTTPS 克隆，不需要任何跨仓密钥；内容仓保持私有。
+3. 构建脚本 `scripts/build-with-content.sh` 必须带执行位（仓库中已记录为 `100755`）。
+4. 本地等价验证：在内容仓目录执行 `npx wrangler deploy --dry-run`，应看到 `Read N files from the assets directory`。
+
+备选方案：若改用经典 Pages 项目，构建命令不变，把输出目录填 `.zhaizhi/dist` 即可，其余步骤相同。
 
 ## 4. 内容仓初始化
 
