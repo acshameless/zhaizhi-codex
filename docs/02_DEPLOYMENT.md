@@ -105,7 +105,9 @@ git add -A && git commit -m "content: 第一本书" && git push -u origin main
 
 1. `npm run build` 本地通过，`dist/` 中有全部页面与 `pagefind/` 索引。
 2. 私密条目验证：在页面源码与 `dist/pagefind/` 中搜索该句片段，必须搜不到。
-3. 中文检索验证：用任意摘抄的中间片段搜索，能命中该句。
+3. 中文检索验证：对本地预览或线上地址运行
+   `ZHAIZHI_BASE_URL=http://localhost:4321 npm run check:search 重读 摘抄 attention`，
+   每一项都应显示 `✓`（脚本用 headless Chrome 打开 `/search/?q=…` 并读取真实结果）。
 4. 时间轴验证：日期取值顺序为「摘于 → 读完日期 → 首次提交日期」。
 5. 移动端验证：手机浏览器打开站点，能读、能搜；录入路径实测一次。
 

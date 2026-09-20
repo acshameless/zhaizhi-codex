@@ -32,6 +32,7 @@ npm install
 npm run dev                                  # 使用仓内示例内容
 ZHAIZHI_CONTENT_DIR=../zhaizhi-content npm run dev   # 使用真实内容仓
 npm run build                                # 校验 + 构建 + 生成搜索索引
+npm run check:search 重读 摘抄          # 用 headless Chrome 验证搜索结果（需先 npm run preview）
 ```
 
 内容格式、字段与校验规则见 [docs/01_PRD.md](docs/01_PRD.md#6-数据模型)；
