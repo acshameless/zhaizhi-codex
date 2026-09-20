@@ -16,6 +16,7 @@ const nav = [
 
 const current = Astro.url.pathname;
 const isCurrent = (href) => (href === '/' ? current === '/' : current.startsWith(href));
+const canonical = new URL(current, Astro.site ?? Astro.url.origin).href;
 ---
 
 <!doctype html>
@@ -25,6 +26,12 @@ const isCurrent = (href) => (href === '/' ? current === '/' : current.startsWith
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="摘纸" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
     <meta name="generator" content={Astro.generator} />
   </head>
   <body>
