@@ -168,7 +168,9 @@ export function loadBooks({ contentDir = resolveContentDir(), includePrivate = f
   const booksDir = path.join(contentDir, 'books');
   let entries = [];
   try {
-    entries = fs.readdirSync(booksDir).filter((f) => f.endsWith('.md'));
+    entries = fs
+      .readdirSync(booksDir)
+      .filter((f) => f.endsWith('.md') && !f.startsWith('_') && !f.startsWith('.'));
   } catch {
     return { books: [], errors: [{ file: booksDir, line: 0, message: `内容目录不存在：${booksDir}` }] };
   }
