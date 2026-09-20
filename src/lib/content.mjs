@@ -5,7 +5,7 @@ import YAML from 'yaml';
 
 const REQUIRED_BOOK_FIELDS = ['title', 'author'];
 const BLOCK_HEADING = /^#{2,4}\s+(q-[A-Za-z0-9_-]+)\s*$/;
-const META_LINE = /^-\s*([^:：]+)\s*[:：]\s*(.+)$/;
+const META_LINE = /^-\s*([^:：]+)\s*[:：]\s*(.*)$/;
 
 export function resolveContentDir(root = process.cwd()) {
   const fromEnv = process.env.ZHAIZHI_CONTENT_DIR;
@@ -91,10 +91,10 @@ export function parseBookFile(source, file) {
     quotes.push({
       id: current.id,
       text: current.text.join('\n').trim(),
-      chapter: current.meta.get('章节') ?? null,
-      location: current.meta.get('位置') ?? null,
+      chapter: metaValue(current.meta, '章节'),
+      location: metaValue(current.meta, '位置'),
       tags: current.meta.has('标签') ? parseList(current.meta.get('标签')) : [],
-      date: current.meta.get('摘于') ?? null,
+      date: metaValue(current.meta, '摘于'),
       favorite: current.meta.has('收藏') ? parseBoolean(current.meta.get('收藏')) : false,
       private: current.meta.has('私密') ? parseBoolean(current.meta.get('私密')) : false,
       note: current.note.join('\n').trim() || null,
@@ -156,6 +156,12 @@ export function parseBookFile(source, file) {
   };
 
   return { book, errors };
+}
+
+function metaValue(map, key) {
+  if (!map.has(key)) return null;
+  const value = String(map.get(key) ?? '').trim();
+  return value || null;
 }
 
 export function loadBooks({ contentDir = resolveContentDir(), includePrivate = false } = {}) {

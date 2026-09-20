@@ -37,6 +37,8 @@ npm run build                                # 校验 + 构建 + 生成搜索索
 内容格式、字段与校验规则见 [docs/01_PRD.md](docs/01_PRD.md#6-数据模型)；
 部署与双仓工作流见 [docs/02_DEPLOYMENT.md](docs/02_DEPLOYMENT.md)。
 
+新增一本书时，复制 [templates/book.md](templates/book.md) 到内容仓的 `books/` 目录；新增一条摘抄时，在对应文件里复制一个 `### q-XXX` 块。
+
 ## 状态
 
 PRD v1.0 已定稿（2026-09-20）；M0 骨架已完成（内容解析、书架/书页/首页/时间轴/搜索），待接入私有内容仓后进入 M1 内容闭环。
