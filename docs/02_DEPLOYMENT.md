@@ -60,7 +60,7 @@ npm run dev
 | 生产分支 | `main` |
 | 根目录 | `/` |
 | 构建命令 | `git clone --depth 1 https://github.com/acshameless/zhaizhi-codex.git .zhaizhi && bash .zhaizhi/scripts/build-with-content.sh "$PWD" .zhaizhi` |
-| 部署命令 | `npx wrangler deploy`（默认） |
+| 部署命令 | `npx wrangler deploy`（默认，读取根目录 `wrangler.jsonc`） |
 | 版本命令 | `npx wrangler versions upload`（默认） |
 | 环境变量 | `NODE_VERSION=22` |
 
@@ -71,7 +71,7 @@ npm run dev
   "name": "zhaizhi-content",
   "compatibility_date": "2026-09-20",
   "assets": {
-    "directory": ".zhaizhi/dist",
+    "directory": "dist",
     "not_found_handling": "404-page"
   }
 }
@@ -80,9 +80,10 @@ npm run dev
 要点：
 
 1. Workers Builds 没有"构建输出目录"字段，产物路径写在 `wrangler.jsonc` 的 `assets.directory` 里。
-2. 公开代码仓通过 HTTPS 克隆，不需要任何跨仓密钥；内容仓保持私有。
-3. 构建脚本 `scripts/build-with-content.sh` 必须带执行位（仓库中已记录为 `100755`）。
-4. 本地等价验证：在内容仓目录执行 `npx wrangler deploy --dry-run`，应看到 `Read N files from the assets directory`。
+2. 构建产物直接落在内容仓根目录的 `dist/`：即使 `wrangler.jsonc` 缺失，wrangler 也能自动识别这个约定目录。
+3. 公开代码仓通过 HTTPS 克隆，不需要任何跨仓密钥；内容仓保持私有。
+4. 构建脚本 `scripts/build-with-content.sh` 必须带执行位（仓库中已记录为 `100755`）。
+5. 本地等价验证：在内容仓目录执行 `npx wrangler deploy --dry-run`，应看到 `Read N files from the assets directory`。
 
 备选方案：若改用经典 Pages 项目，构建命令不变，把输出目录填 `.zhaizhi/dist` 即可，其余步骤相同。
 

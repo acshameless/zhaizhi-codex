@@ -11,6 +11,10 @@ CODE_DIR="${2:-$(cd "$(dirname "$0")/.." && pwd)}"
 
 cd "$CODE_DIR"
 npm ci
-ZHAIZHI_CONTENT_DIR="$CONTENT_DIR" npm run build
+export ZHAIZHI_CONTENT_DIR="$CONTENT_DIR"
+export ZHAIZHI_OUT_DIR="$CONTENT_DIR/dist"
 
-echo "构建完成：$CODE_DIR/dist"
+rm -rf "$ZHAIZHI_OUT_DIR"
+npm run build
+
+echo "构建完成：$ZHAIZHI_OUT_DIR"
