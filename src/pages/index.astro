@@ -1,0 +1,83 @@
+---
+import Base from '../layouts/Base.astro';
+import QuoteCard from '../components/QuoteCard.astro';
+import { allQuotes, loadBooks, resolveContentDir } from '../lib/content.mjs';
+import { pickDaily, pickRotation } from '../lib/daily.mjs';
+
+const { books, errors } = loadBooks({ contentDir: resolveContentDir() });
+for (const error of errors) {
+  console.error(`[content] ${error.file}:${error.line} ${error.message}`);
+}
+
+const quotes = allQuotes(books);
+const daily = pickDaily(quotes);
+const rotation = pickRotation(quotes, 12).map((item) => ({
+  text: item.quote.text,
+  title: item.book.title,
+  author: item.book.author,
+  url: `/books/${item.book.slug}/#${item.quote.id}`,
+}));
+const recent = [...quotes]
+  .sort((a, b) => String(b.quote.resolvedDate ?? '').localeCompare(String(a.quote.resolvedDate ?? '')))
+  .slice(0, 5);
+---
+
+<Base title="摘纸" description="收藏那些值得再次遇见的瞬间。">
+  <h1>纸间</h1>
+  <p class="lede">收藏那些值得再次遇见的瞬间。</p>
+
+  <form class="search-entry" action="/search" method="get" role="search">
+    <input type="search" name="q" placeholder="搜句子、作者、书名、标签…" aria-label="搜索摘抄" />
+    <button type="submit">寻句</button>
+  </form>
+
+  {
+    daily ? (
+      <section aria-labelledby="daily-heading">
+        <h2 id="daily-heading">今日重逢</h2>
+        <div class="daily">
+          <blockquote id="daily-text">{daily.quote.text}</blockquote>
+          <p class="meta" id="daily-meta">
+            《{daily.book.title}》{daily.book.author}
+            {daily.quote.location ? ` · ${daily.quote.location}` : ''}
+          </p>
+          <div class="actions">
+            <a id="daily-link" href={`/books/${daily.book.slug}/#${daily.quote.id}`}>回到书里</a>
+            <button class="ghost" type="button" id="daily-next">再看一句</button>
+          </div>
+        </div>
+        <script type="application/json" id="daily-rotation" set:html={JSON.stringify(rotation)} />
+      </section>
+    ) : (
+      <p class="empty">还没有内容。往内容仓的 books/ 放进第一本书，这里就会亮起来。</p>
+    )
+  }
+
+  {
+    recent.length > 0 && (
+      <section aria-labelledby="recent-heading">
+        <h2 id="recent-heading">最近摘下的句子</h2>
+        {recent.map((item) => (
+          <QuoteCard quote={item.quote} book={item.book} />
+        ))}
+      </section>
+    )
+  }
+</Base>
+
+<script is:inline>
+  const nextButton = document.getElementById('daily-next');
+  const dataTag = document.getElementById('daily-rotation');
+  if (nextButton && dataTag) {
+    const pool = JSON.parse(dataTag.textContent || '[]');
+    let index = 0;
+    nextButton.addEventListener('click', () => {
+      if (pool.length === 0) return;
+      index = (index + 1) % pool.length;
+      const item = pool[index];
+      document.getElementById('daily-text').textContent = item.text;
+      document.getElementById('daily-meta').textContent = `《${item.title}》${item.author}`;
+      document.getElementById('daily-link').setAttribute('href', item.url);
+    });
+  }
+</script>

@@ -1,0 +1,53 @@
+---
+import '../styles/global.css';
+
+const {
+  title = '摘纸',
+  description = '收藏那些值得再次遇见的瞬间。',
+} = Astro.props;
+
+const nav = [
+  { href: '/', label: '纸间' },
+  { href: '/books', label: '书架' },
+  { href: '/search', label: '寻句' },
+  { href: '/timeline', label: '重逢' },
+  { href: '/about', label: '关于' },
+];
+
+const current = Astro.url.pathname;
+const isCurrent = (href) => (href === '/' ? current === '/' : current.startsWith(href));
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+  </head>
+  <body>
+    <header class="site-header shell" data-pagefind-ignore>
+      <a class="brand" href="/">摘纸</a>
+      <nav class="site-nav">
+        {
+          nav.map((item) => (
+            <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+              {item.label}
+            </a>
+          ))
+        }
+      </nav>
+    </header>
+
+    <main class="shell" data-pagefind-body>
+      <slot />
+    </main>
+
+    <footer class="site-footer shell" data-pagefind-ignore>
+      <span>收藏那些值得再次遇见的瞬间。</span>
+      <span>Markdown · Git · 无数据库</span>
+    </footer>
+  </body>
+</html>

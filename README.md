@@ -23,6 +23,20 @@ Astro + TypeScript + Tailwind CSS v4 + Pagefind + Cloudflare Pages。
 一本书 = 一个 Markdown 文件（`books/<slug>.md`）。
 Git 是唯一数据源，任何编辑器都能改，十年后仍然打得开。
 
+真实摘抄存放在私有内容仓 `acshameless/zhaizhi-content`；本仓库内的 `examples/` 是虚构示例，用于让代码仓可以独立构建与演示。
+
+## 本地开发
+
+```bash
+npm install
+npm run dev                                  # 使用仓内示例内容
+ZHAIZHI_CONTENT_DIR=../zhaizhi-content npm run dev   # 使用真实内容仓
+npm run build                                # 校验 + 构建 + 生成搜索索引
+```
+
+内容格式、字段与校验规则见 [docs/01_PRD.md](docs/01_PRD.md#6-数据模型)；
+部署与双仓工作流见 [docs/02_DEPLOYMENT.md](docs/02_DEPLOYMENT.md)。
+
 ## 状态
 
-PRD v1.0 草案（2026-09-20），开发尚未开始。
+PRD v1.0 已定稿（2026-09-20）；M0 骨架已完成（内容解析、书架/书页/首页/时间轴/搜索），待接入私有内容仓后进入 M1 内容闭环。

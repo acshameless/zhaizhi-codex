@@ -1,0 +1,52 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="寻句 · 摘纸" description="在所有摘抄里找一句话。">
+  <h1>寻句</h1>
+  <p class="lede">输入任意片段、作者、书名或标签。搜索索引在构建时生成，页面不向任何第三方发请求。</p>
+
+  <div id="search"></div>
+  <noscript><p class="empty">搜索需要 JavaScript。也可以直接浏览书架。</p></noscript>
+
+  <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+  <script is:inline src="/pagefind/pagefind-ui.js"></script>
+  <script is:inline>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (!window.PagefindUI) {
+        document.getElementById('search').innerHTML =
+          '<p class="empty">搜索索引尚未生成。运行 <code>npm run build</code> 后再打开此页。</p>';
+        return;
+      }
+      const params = new URLSearchParams(location.search);
+      new window.PagefindUI({
+        element: '#search',
+        showSubResults: true,
+        showImages: false,
+        translations: {
+          placeholder: '搜句子、作者、书名、标签…',
+          zero_results: '没有找到「[SEARCH_TERM]」，换个词试试。',
+        },
+        processResult: (result) => {
+          try {
+            const term = document.querySelector('#search input')?.value?.trim();
+            if (term && result.url && !result.url.includes('#:~:text=')) {
+              result.url = `${result.url.split('#')[0]}#:~:text=${encodeURIComponent(term)}`;
+            }
+          } catch {
+            /* 保持原样返回 */
+          }
+          return result;
+        },
+      });
+      const initial = params.get('q');
+      if (initial) {
+        const input = document.querySelector('#search input');
+        if (input) {
+          input.value = initial;
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      }
+    });
+  </script>
+</Base>

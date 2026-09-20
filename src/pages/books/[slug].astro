@@ -1,0 +1,48 @@
+---
+import Base from '../../layouts/Base.astro';
+import QuoteCard from '../../components/QuoteCard.astro';
+import { loadBooks, resolveContentDir } from '../../lib/content.mjs';
+
+export function getStaticPaths() {
+  const { books } = loadBooks({ contentDir: resolveContentDir() });
+  return books.map((book) => ({ params: { slug: book.slug }, props: { book } }));
+}
+
+const { book } = Astro.props;
+---
+
+<Base title={`${book.title} · 摘纸`} description={`${book.author}《${book.title}》的摘抄。`}>
+  <h1>{book.title}</h1>
+  <p class="lede">
+    {book.author}
+    {book.translator && <span> 译</span>}
+    {book.publisher && <span> · {book.publisher}</span>}
+    {book.year && <span> · {book.year}</span>}
+    {book.readFinish && <span> · 读完于 {book.readFinish}</span>}
+  </p>
+  <p class="lede">{book.quoteCount} 条摘抄{book.tags.length > 0 && <span> · {book.tags.map((tag) => `#${tag}`).join(' ')}</span>}</p>
+
+  {
+    book.quotes.length === 0 ? (
+      <p class="empty">这本书还没有摘抄。</p>
+    ) : (
+      book.quotes.map((quote) => <QuoteCard quote={quote} book={book} showBook={false} showCopy />)
+    )
+  }
+</Base>
+
+<script is:inline>
+  document.addEventListener('click', async (event) => {
+    const button = event.target.closest('button[data-copy]');
+    if (!button) return;
+    const value = button.getAttribute('data-copy') || '';
+    try {
+      await navigator.clipboard.writeText(value);
+      const original = button.textContent;
+      button.textContent = '已复制';
+      setTimeout(() => (button.textContent = original), 1200);
+    } catch {
+      button.textContent = '复制失败，请手动选择';
+    }
+  });
+</script>

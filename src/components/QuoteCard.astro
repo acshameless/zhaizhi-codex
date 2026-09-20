@@ -1,0 +1,25 @@
+---
+const { quote, book, showBook = true, showCopy = false } = Astro.props;
+---
+
+<article class="quote" id={quote.id}>
+  <blockquote>{quote.text}</blockquote>
+  <p class="meta">
+    {showBook && <a href={`/books/${book.slug}/#${quote.id}`}>{book.title}</a>}
+    {quote.chapter && <span> · {quote.chapter}</span>}
+    {quote.location && <span> · {quote.location}</span>}
+    {quote.resolvedDate && <span> · {quote.resolvedDate}</span>}
+    {quote.tags.length > 0 && <span> · {quote.tags.map((tag) => `#${tag}`).join(' ')}</span>}
+    {!showBook && <span> · {book.author}</span>}
+  </p>
+  {quote.note && <p class="quote-note">{quote.note}</p>}
+  {
+    showCopy && (
+      <div class="actions">
+        <button class="ghost" data-copy={`${quote.text} —《${book.title}》${book.author}`}>
+          复制这一句
+        </button>
+      </div>
+    )
+  }
+</article>

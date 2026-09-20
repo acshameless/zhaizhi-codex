@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+import QuoteCard from '../components/QuoteCard.astro';
+import { allQuotes, loadBooks, resolveContentDir } from '../lib/content.mjs';
+
+const { books } = loadBooks({ contentDir: resolveContentDir() });
+const quotes = allQuotes(books).sort((a, b) =>
+  String(b.quote.resolvedDate ?? '').localeCompare(String(a.quote.resolvedDate ?? '')),
+);
+
+const groups = new Map();
+for (const item of quotes) {
+  const key = item.quote.resolvedDate ? String(item.quote.resolvedDate).slice(0, 7) : '未注明日期';
+  if (!groups.has(key)) groups.set(key, []);
+  groups.get(key).push(item);
+}
+---
+
+<Base title="重逢 · 摘纸" description="按时间回看摘下的句子。">
+  <h1>重逢</h1>
+  <p class="lede">时间轴按「摘于 → 读完日期 → 首次提交」取值，共 {quotes.length} 条。</p>
+
+  {
+    groups.size === 0 ? (
+      <p class="empty">还没有可展示的摘抄。</p>
+    ) : (
+      [...groups.entries()].map(([month, items]) => (
+        <section>
+          <h2 class="timeline-month">{month}</h2>
+          {items.map((item) => (
+            <QuoteCard quote={item.quote} book={item.book} />
+          ))}
+        </section>
+      ))
+    )
+  }
+</Base>

@@ -1,0 +1,33 @@
+---
+import Base from '../../layouts/Base.astro';
+import { loadBooks, resolveContentDir } from '../../lib/content.mjs';
+
+const { books } = loadBooks({ contentDir: resolveContentDir() });
+---
+
+<Base title="书架 · 摘纸" description="读过的书，与其中留下的句子。">
+  <h1>书架</h1>
+  <p class="lede">共 {books.length} 本，{books.reduce((sum, book) => sum + book.quoteCount, 0)} 条摘抄。</p>
+
+  {
+    books.length === 0 ? (
+      <p class="empty">内容仓还是空的。放进第一本书的 Markdown 文件即可。</p>
+    ) : (
+      <ul class="book-grid">
+        {books.map((book) => (
+          <li class="book-card">
+            <h3>
+              <a href={`/books/${book.slug}/`}>{book.title}</a>
+            </h3>
+            <p class="meta">
+              {book.author}
+              <span> · {book.quoteCount} 条摘抄</span>
+              {book.latestQuoteDate && <span> · 最近 {book.latestQuoteDate}</span>}
+              {book.readFinish && <span> · 读完 {book.readFinish}</span>}
+            </p>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</Base>

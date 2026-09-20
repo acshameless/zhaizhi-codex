@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+
+# 本地内容仓通过 ZHAIZHI_CONTENT_DIR 引用；若复制到此处则不纳入版本控制
+content/*
+!content/.gitkeep
